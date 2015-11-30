@@ -1,0 +1,24 @@
+Begin log file
+--------------------------------------------------------------------------------
+
+Exception type: AI behavioural flaw
+
+Function: playervcom(sf::RenderWindow & window)
+Exception thrown on purpose?: Yes
+
+ballposition.x: 800
+ballposition.y: 89
+leftpaddleposition.x: 5
+leftpaddleposition.y: 220
+rightpaddleposition.x: 795
+rightpaddleposition.y: 45
+cpuballcontact: 80 - 40 = 40
+IscpuballcontactRand: false
+slope.x: 5
+slope.y: -5
+clock.getElapsedTime().asMilliseconds() = 3191
+------------------------------------------------------------------------------
+End log file
+
+Please do not modify the contents of this file. Its information can be useful for diagnosing errors, 
+and should be sent to me (the creator of the game).
