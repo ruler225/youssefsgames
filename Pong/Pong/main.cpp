@@ -1020,10 +1020,10 @@ void mainmenu(sf::RenderWindow& window, sf::Font& font) {
 		menutext.setCharacterSize(55);
 		menutext.setPosition(65, 100);
 		if (!fullscreen)
-			menutext.setString("Main menu:\n\nPress 1 for 1 player\nPress 2 for 2 player\nPress 3 for Player vs Computer\nPress 4 to enable fullscreen\nPress Esc to quit");
+			menutext.setString("Main menu:\n\nPress 1 for 1 player\nPress 2 for 2 player\nPress 3 for Player vs Computer\nPress 4 for 2 player co-op\nPress 5 to enable fullscreen\nPress Esc to quit");
 
 		if (fullscreen)
-			menutext.setString("Main menu:\n\nPress 1 for 1 player\nPress 2 for 2 player\nPress 3 for Player vs Computer\nPress 4 to exit fullscreen\nPress Esc to quit");
+			menutext.setString("Main menu:\n\nPress 1 for 1 player\nPress 2 for 2 player\nPress 3 for Player vs Computer\nPress 4 for 2 player co-op\nPress 5 to exit fullscreen\nPress Esc to quit");
 
 		/*	sf::Text smallcredits;
 		smallcredits.setFont(font);
@@ -1072,6 +1072,23 @@ void mainmenu(sf::RenderWindow& window, sf::Font& font) {
 
 		if (event.type == sf::Event::KeyPressed) {
 			if (event.key.code == sf::Keyboard::Num4) {
+				sf::Text comingsoon;
+				comingsoon.setFont(font);
+				comingsoon.setCharacterSize(50);
+				comingsoon.setPosition(100, 200);
+				comingsoon.setString("Coming Soon ;)");
+				window.clear();
+				window.draw(comingsoon);
+				window.display();
+				Sleep(5000);
+				exit(0);
+
+			}
+		}
+
+
+		if (event.type == sf::Event::KeyPressed) {
+			if (event.key.code == sf::Keyboard::Num5) {
 				
 				if (!fullscreen) {
 					MessageBox(NULL, (LPCWSTR)L"If you want to exit fullscreen mode, you can do so later from the main menu.", (LPCWSTR)L"Fullscreen mode", MB_ICONINFORMATION);
