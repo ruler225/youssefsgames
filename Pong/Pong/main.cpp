@@ -7,17 +7,10 @@
 //entry point of this function is main()
 
 
-bool xor2(bool statement1, bool statement2) {
-	if ((statement1 && !statement2) || (!statement1 && statement2))
-		return true;
-
-	else
-		return false;
-}
-
 
 bool fullscreen = false;	//global variable that dictates whether or not game runs in full screen
 
+// I apologize in advance for the lack of comments in my code. I grew up with bad coding habits :(
 
 //This function makes sure that whenever it is called it checks whether or not the fullscreen window is in focus. If it is not, it closes the window, waits for a new blank 
 void fullscreentasks(sf::RenderWindow& window, bool& isPaused, sf::Event& event){
@@ -640,25 +633,34 @@ start:
 	//	if (slope.y > 5 && ballposition.y > (rightpaddleposition.y - 40) && rightpaddleposition.y < 560)
 	//		rightpaddleposition.y += 5;
 
-		if (ballposition.y > (rightpaddleposition.y + (cpuballcontact - 40)) && rightpaddleposition.y < 560)
-			rightpaddleposition.y += 5;
+		if (ballposition.y > (rightpaddleposition.y + (cpuballcontact - 40)) && rightpaddleposition.y < 560) {
 
+			if (ballposition.y > rightpaddleposition.y + 5 - 40)
+			rightpaddleposition.y += 5;
+		}
 
 
 	//	if (slope.y < -5 && ballposition.y < (rightpaddleposition.y + 40) && rightpaddleposition.y > 40)
 	//		rightpaddleposition.y -= 5;
 	
-		else if (ballposition.y < (rightpaddleposition.y + (cpuballcontact - 40)) && rightpaddleposition.y > 40)
+		if (ballposition.y < (rightpaddleposition.y + (cpuballcontact - 40)) && rightpaddleposition.y > 40) {
+		
+			if (ballposition.y < rightpaddleposition.y - 5 + 40)
 			rightpaddleposition.y -= 5;
+		}
 
 
-		else if (ballposition.y > rightpaddleposition.y + 40)
+		
+
+
+
+		/*else if (ballposition.y > rightpaddleposition.y + 40)
 			rightpaddleposition.y += 5;
 
 		else if (ballposition.y < rightpaddleposition.y - 40)
 			rightpaddleposition.y -= 5;
 
-
+			*/
 
 
 

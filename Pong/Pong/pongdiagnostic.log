@@ -1,22 +1,22 @@
 Begin log file
 --------------------------------------------------------------------------------
 
-Exception type: AI behavioural flaw
+Exception type: Error ball loop
 
 Function: playervcom(sf::RenderWindow & window)
 Exception thrown on purpose?: Yes
 
-ballposition.x: 800
-ballposition.y: 462
+ballposition.x: 790
+ballposition.y: 595
 leftpaddleposition.x: 5
-leftpaddleposition.y: 190
+leftpaddleposition.y: 360
 rightpaddleposition.x: 795
-rightpaddleposition.y: 505
+rightpaddleposition.y: 555
 cpuballcontact: 0 - 40 = -40
 IscpuballcontactRand: false
-slope.x: 5
-slope.y: 4
-clock.getElapsedTime().asMilliseconds() = 3191
+slope.x: -5
+slope.y: 7
+clock.getElapsedTime().asMilliseconds() = 6
 ------------------------------------------------------------------------------
 End log file
 
