@@ -7,17 +7,10 @@
 //entry point of this function is main()
 
 
-bool xor2(bool statement1, bool statement2) {
-	if ((statement1 && !statement2) || (!statement1 && statement2))
-		return true;
-
-	else
-		return false;
-}
-
 
 bool fullscreen = false;	//global variable that dictates whether or not game runs in full screen
 
+// I apologize in advance for the lack of comments in my code. I grew up with bad coding habits :(
 
 //This function makes sure that whenever it is called it checks whether or not the fullscreen window is in focus. If it is not, it closes the window, waits for a new blank 
 void fullscreentasks(sf::RenderWindow& window, bool& isPaused, sf::Event& event){
@@ -640,25 +633,34 @@ start:
 	//	if (slope.y > 5 && ballposition.y > (rightpaddleposition.y - 40) && rightpaddleposition.y < 560)
 	//		rightpaddleposition.y += 5;
 
-		if (ballposition.y > (rightpaddleposition.y + (cpuballcontact - 40)) && rightpaddleposition.y < 560)
-			rightpaddleposition.y += 5;
+		if (ballposition.y > (rightpaddleposition.y + (cpuballcontact - 40)) && rightpaddleposition.y < 560) {
 
+			if (ballposition.y > rightpaddleposition.y + 5 - 40)
+			rightpaddleposition.y += 5;
+		}
 
 
 	//	if (slope.y < -5 && ballposition.y < (rightpaddleposition.y + 40) && rightpaddleposition.y > 40)
 	//		rightpaddleposition.y -= 5;
 	
-		else if (ballposition.y < (rightpaddleposition.y + (cpuballcontact - 40)) && rightpaddleposition.y > 40)
+		if (ballposition.y < (rightpaddleposition.y + (cpuballcontact - 40)) && rightpaddleposition.y > 40) {
+		
+			if (ballposition.y < rightpaddleposition.y - 5 + 40)
 			rightpaddleposition.y -= 5;
+		}
 
 
-		else if (ballposition.y > rightpaddleposition.y + 40)
+		
+
+
+
+		/*else if (ballposition.y > rightpaddleposition.y + 40)
 			rightpaddleposition.y += 5;
 
 		else if (ballposition.y < rightpaddleposition.y - 40)
 			rightpaddleposition.y -= 5;
 
-
+			*/
 
 
 
@@ -1018,10 +1020,10 @@ void mainmenu(sf::RenderWindow& window, sf::Font& font) {
 		menutext.setCharacterSize(55);
 		menutext.setPosition(65, 100);
 		if (!fullscreen)
-			menutext.setString("Main menu:\n\nPress 1 for 1 player\nPress 2 for 2 player\nPress 3 for Player vs Computer\nPress 4 to enable fullscreen\nPress Esc to quit");
+			menutext.setString("Main menu:\n\nPress 1 for 1 player\nPress 2 for 2 player\nPress 3 for Player vs Computer\nPress 4 for 2 player co-op\nPress 5 to enable fullscreen\nPress Esc to quit");
 
 		if (fullscreen)
-			menutext.setString("Main menu:\n\nPress 1 for 1 player\nPress 2 for 2 player\nPress 3 for Player vs Computer\nPress 4 to exit fullscreen\nPress Esc to quit");
+			menutext.setString("Main menu:\n\nPress 1 for 1 player\nPress 2 for 2 player\nPress 3 for Player vs Computer\nPress 4 for 2 player co-op\nPress 5 to exit fullscreen\nPress Esc to quit");
 
 		/*	sf::Text smallcredits;
 		smallcredits.setFont(font);
@@ -1070,6 +1072,23 @@ void mainmenu(sf::RenderWindow& window, sf::Font& font) {
 
 		if (event.type == sf::Event::KeyPressed) {
 			if (event.key.code == sf::Keyboard::Num4) {
+				sf::Text comingsoon;
+				comingsoon.setFont(font);
+				comingsoon.setCharacterSize(50);
+				comingsoon.setPosition(100, 200);
+				comingsoon.setString("Coming Soon ;)");
+				window.clear();
+				window.draw(comingsoon);
+				window.display();
+				Sleep(5000);
+				exit(0);
+
+			}
+		}
+
+
+		if (event.type == sf::Event::KeyPressed) {
+			if (event.key.code == sf::Keyboard::Num5) {
 				
 				if (!fullscreen) {
 					MessageBox(NULL, (LPCWSTR)L"If you want to exit fullscreen mode, you can do so later from the main menu.", (LPCWSTR)L"Fullscreen mode", MB_ICONINFORMATION);
