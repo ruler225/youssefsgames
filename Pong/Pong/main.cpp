@@ -534,6 +534,8 @@ void playervcom(sf::RenderWindow& window) {
 	sf::Vector2i score(0, 0);
 	bool isPaused = true;
 	sf::Vector2f ballposition;
+	int streak = 0;
+	int higheststreak = 0;
 start:
 	srand((unsigned)time(0));
 	bool fastball = false;
