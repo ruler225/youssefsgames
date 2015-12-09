@@ -1145,7 +1145,7 @@ void mainmenu(sf::RenderWindow& window, sf::Font& font) {
 int readhighscore() {
 	int num = 0;
 	char fake1;
-	std::string fake2;
+	char fake2;
 	std::ifstream highscore;
 	highscore.open("pong.dat");
 	
@@ -1158,7 +1158,12 @@ int readhighscore() {
 
 	highscore >> fake1 >> num >> fake2;
 
-	if (fake2 != "pq3j4jpq483jpaojifpq84" || fake1 != '9') {
+	highscore.seekg(61);
+
+	
+
+	//if (fake2 != "pq3j4jpq483jpaojifpq84" || fake1 != '9') {
+	if (fake1 != '9') {
 		int action = MessageBox(NULL, (LPCWSTR)L"The file \"pong.dat\" is either invalid or has been incorrectly modified. It will now be deleted (this includes settings and high scores). If you think you can fix this problem, you can cancel the operation. However, if you proceed, everything will be deleted.", (LPCWSTR)L"Error reading file", MB_ICONERROR | MB_OKCANCEL);
 
 		if (action == IDCANCEL)
@@ -1220,7 +1225,7 @@ int writehighscore(int num) {
 
 		//highscore << fake1 << fake2[0] << fake2[1] << fake2[2] << fake2[3] << fake2[4] << fake2[5] << fake2[6] << fake2[7] << fake2[8] << fake2[9] << fake2[10] <<  num;
 	
-	highscore << "p2rf8j2p893jfp2893fjp82jf2p8j82jpjpe8jdapoijsdfp98jqf89pj349" << num << "pq3j4jpq483jpaojifpq84";
+	highscore << "p2rf8j2p893jfp2893fjp82jf2p8j82jpjpe8jdapoijsdfp98jqf89pj349" << num << "pq3j4jpq483jpaojifpq84" << endl;
 		
 	return num;
 }
