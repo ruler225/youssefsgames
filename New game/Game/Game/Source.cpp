@@ -9,7 +9,7 @@ int main() {
 	
 	window.setFramerateLimit(60); //Limits the window to run at 60 fps in order to prevent unnecessary strain on the GPU
 	//Game loop
-	bool makeBigger = false;
+	bool makeBigger = false;	//Boolean to control when the square gets bigger
 	while (window.isOpen()) {
 		sf::Event event;	//create an event object to process events
 
@@ -27,16 +27,16 @@ int main() {
 	square.setPosition(sf::Mouse::getPosition(window).x - 16, sf::Mouse::getPosition(window).y - 16); //Set the position of the square equal to the coordinates of the mouse. This allows the square to follow the mouse.
 
 
-	if (event.type == sf::Event::MouseButtonPressed)
+	if (event.type == sf::Event::MouseButtonPressed)	//When the mouse button is pressed, it should set makeBigger to true
 		makeBigger = true;
 
-	else if (event.type == sf::Event::MouseButtonReleased)
+	else if (event.type == sf::Event::MouseButtonReleased)	//When the mouse button is released, it should set makeBigger to false
 		makeBigger = false;
 	
-	if (makeBigger)
+	if (makeBigger)		//When makeBigger is true, the size of the square is slightly bigger.
 	squaresize = sf::Vector2f(40, 40);
 
-		square.setSize(squaresize);
+		square.setSize(squaresize);	
 		window.draw(square);
 
 

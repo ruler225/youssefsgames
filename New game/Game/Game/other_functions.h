@@ -7,7 +7,8 @@
 
 void windowtasks(sf::RenderWindow& window, sf::Event& event);
 
-
+//I'm not currently using this class, but I might in the future (or not)
+//For now, I'm just working on it, practicing my class-making skills, and see if this becomes something useful
 class gameobject {
 private:
 	int x = 0;
