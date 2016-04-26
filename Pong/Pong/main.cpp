@@ -97,6 +97,487 @@ int essentialeventtasks(sf::RenderWindow& window, sf::Event& event, bool Exit) {
 
 
 
+int readhighscore(std::string savemode) {
+	int num = 0;
+	int numlength = 0;
+	int numlengthnew = 0;
+	std::string strnum;
+	char fake1;
+	char fake2;
+	char fake3;
+	std::string fake4;
+	std::ifstream highscore;
+	highscore.open("pong.dat");
+
+	if (highscore.fail()) {
+		MessageBox(NULL, (LPCWSTR)L"Settings and highscores will be stored in \"pong.dat\". (If you are running this game in its zip file, please make sure you extract it or your high score will not be saved)", (LPCWSTR)L"No saved data found", MB_ICONINFORMATION);
+		return 0;
+	}
+
+	highscore.seekg(19);
+
+	highscore >> fake1 >> numlength >> fake2;
+
+	highscore.seekg(59 + numlength);
+
+	highscore >> fake3 >> num >> fake4;
+	std::cout << "Read data: " << fake1 << numlength << fake2 << fake3 << num << fake4 << std::endl;
+
+	
+
+	strnum = std::to_string(num);
+
+	numlengthnew = strnum.length();
+
+	if ((fake1 != 'j' || fake2 != 'p' || fake3 != '9' || fake4 != "pq3j4jpq483jpaojifpq84") || numlengthnew != numlength) {
+		int action = MessageBox(NULL, (LPCWSTR)L"The file \"pong.dat\" is either invalid or has been incorrectly modified. It will now be deleted (this includes settings and high scores). If you think you can fix this problem, you can cancel the operation. However, if you proceed, everything will be deleted.", (LPCWSTR)L"Error reading file", MB_ICONERROR | MB_OKCANCEL);
+
+		if (action == IDCANCEL)
+			exit(-1);
+
+		highscore.close();
+		do {
+			if (remove("pong.dat") != 0) {
+
+
+				action = MessageBox(NULL, (LPCWSTR)L"Could not delete file", (LPCWSTR)L"Error", MB_ICONERROR | MB_RETRYCANCEL);
+
+				if (action == IDCANCEL) {
+					exit(-1);
+				}
+			}
+		} while (action == IDRETRY);
+
+
+
+		MessageBox(NULL, (LPCWSTR)L"File deleted! (try not to get into any more trouble)", (LPCWSTR)L"File Deleted", MB_ICONINFORMATION | MB_OK);
+		return 0;
+	}
+
+	//highscore >> fake3 >> num;
+	return num;
+}
+
+
+
+
+
+
+int writehighscore(int num) {
+	//std::string fake1 = "28934h02h4f02f2790f273yfr97y3290fm02n389yfrnm029ryfmn023rfn02893yrfnm02839rfynpoifjqpiojfqiojewfqijowefqpweifojqpwioefj ";
+	std::ofstream highscore;
+	//char fake2[10] = { 'v','8','4','j','s','0','f','0','f','h','9' };
+	highscore.open("pong.dat");
+
+	if (highscore.fail())
+		return -1;
+
+
+
+	//highscore << fake1 << fake2[0] << fake2[1] << fake2[2] << fake2[3] << fake2[4] << fake2[5] << fake2[6] << fake2[7] << fake2[8] << fake2[9] << fake2[10] <<  num;
+	std::string strnum = std::to_string(num);
+
+
+	int numlength = strnum.length();
+
+
+
+	std::cout << "length high score number to be written: " << numlength << " digit(s)" << std::endl;
+
+	highscore << "p2rf8j2p893jfp2893fj" << numlength << "p82jf2p8j82jpjpe8jdapoijsdfp98jqf89pj349" << num << "pq3j4jpq483jpaojifpq84" << std::endl;
+
+	return num;
+}
+
+
+
+
+
+
+void coop(sf::RenderWindow& window) {
+	window.setTitle("2-Player Co-op");
+	bool firstrun = true;
+
+	sf::Font font;
+
+	if (!font.loadFromFile("C:\\Windows\\Fonts\\isocpeur.ttf")) {
+		int error;
+		do
+		{
+			if (font.loadFromFile("C:\\Windows\\Fonts\\isocpeur.ttf"))
+				break;
+
+			else if (font.loadFromFile("resources\\isocpeur.ttf"))
+				break;
+
+
+			else if (font.loadFromFile("isocpeur.ttf"))
+				break; 
+
+			else if (font.loadFromFile("C:\\Windows\\Fonts\\impact.ttf")) {
+				break;
+			}
+
+
+			error = MessageBox(NULL, (LPCWSTR)L"Could not load font file. You may not have the correct font installed (this game has been tested on Windows 7). To fix the problem, do one of the following:\n\n1) Copy any TrueType font (with file extension \".ttf\") from \"C:\\Windows\\Fonts\" to the same place as the game, and rename it to \"isocpeur.ttf\"\n2) Search \"Download isocpeur.ttf\" on Google and click on the first result. Once it is download, open the file. You should get a font preview. Now install the font (you need to be an administrator to do this. If you are not an admininstrator, use the other method above.). Now click retry, and the game should run", (LPCWSTR)L"Could not load font file", MB_ICONERROR | MB_RETRYCANCEL);
+			//error = MessageBox(NULL, (LPCWSTR)L"You forgot to put the resources folder in the same place as the game dumbass!", (LPCWSTR)L"Could not load font file", MB_ICONERROR | MB_RETRYCANCEL);
+		} while (error == IDRETRY);
+
+		if (error == IDCANCEL)
+			exit(0);
+	}
+
+	bool isPaused = true;
+	sf::Vector2f ballposition;
+	int highscore = readhighscore("coop");
+start:
+	sf::Vector2f leftpaddleposition(5, 300);
+	sf::Vector2f rightpaddleposition(795, 300);
+	sf::CircleShape ball;
+	sf::RectangleShape leftpaddle;
+	sf::RectangleShape rightpaddle;
+	ball.setOrigin(5, 5);
+	leftpaddle.setOrigin(5, 40);
+	rightpaddle.setOrigin(5, 40);
+	sf::Vector2i slope;
+	int score = 0;
+	if (ballposition.x >= 800) {
+		ballposition.x = 400, ballposition.y = 300;
+		slope.x = -5;
+		slope.y = 0;
+	}
+
+	else {
+		ballposition.x = 400, ballposition.y = 300;
+		slope.x = 5;
+		slope.y = 0;
+	}
+
+	while (window.isOpen()) {
+
+		sf::Event event;
+
+
+
+		ballposition.y += slope.y;
+		ballposition.x += slope.x;
+
+
+
+		ball.setPosition(ballposition);
+		ball.setFillColor(sf::Color::Red);
+		ball.setOutlineColor(sf::Color::Black);
+		ball.setOutlineThickness(2);
+		ball.setRadius(5);
+
+		leftpaddle.setPosition(leftpaddleposition);
+		leftpaddle.setFillColor(sf::Color::Blue);
+		leftpaddle.setOutlineColor(sf::Color::Black);
+		leftpaddle.setOutlineThickness(1);
+		leftpaddle.setSize(sf::Vector2f(10, 80));
+		window.draw(leftpaddle);
+
+		rightpaddle.setPosition(rightpaddleposition);
+		rightpaddle.setFillColor(sf::Color::Red);
+		rightpaddle.setOutlineColor(sf::Color::Black);
+		rightpaddle.setOutlineThickness(1);
+		rightpaddle.setSize(sf::Vector2f(10, 80));
+		window.draw(rightpaddle);
+
+		window.pollEvent(event);
+
+		if (essentialeventtasks(window, event, false) == 1) {
+			isPaused = true;
+			int action = MessageBox(NULL, (LPCWSTR)L"Do you want to quit?", (LPCWSTR)L"Quit?", MB_ICONQUESTION | MB_YESNO);
+
+			if (action == IDYES) {
+				window.close();
+				exit(0);
+			}
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && leftpaddleposition.y > 40)
+			leftpaddleposition.y -= 5;
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && leftpaddleposition.y < 560)
+			leftpaddleposition.y += 5;
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && rightpaddleposition.y > 40)
+			rightpaddleposition.y -= 5;
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && rightpaddleposition.y < 560)
+			rightpaddleposition.y += 5;
+
+
+
+		if (ballposition.x <= 0) {
+
+			bool IsHighscore = false;
+
+			if (score > highscore) {
+				IsHighscore = true;
+				highscore = score;
+				writehighscore(highscore);
+			}
+
+
+			while (window.isOpen()) {
+				fullscreentasks(window, event);
+				slope.x = 0, slope.y = 0;
+				sf::Text text;
+				text.setFont(font);
+				text.setCharacterSize(50);
+				text.setPosition(60, 100);
+				if (IsHighscore)
+					text.setString("NEW HIGH SCORE! :)\nYou scored " + std::to_string(score) + "\n\nYour new high score is " + std::to_string(score) + "\n\nPress Space to retry\nPress Esc to return to main menu");
+
+				if (!IsHighscore) {
+					if (score >= 1 && score <= highscore)
+						text.setString("GAME OVER :(\nYou scored " + std::to_string(score) + "\n\nYour high score is " + std::to_string(highscore) + "\n\nPress Space to retry\nPress Esc to return to main menu");
+
+					if (score == 0 && highscore > 0)
+						text.setString("GAME OVER :(\nYou really suck at this!\n\nYour high score is " + std::to_string(highscore) + "\n\nPress Space to retry\nPress Esc to return to main menu");
+
+					if ((score == highscore || score == highscore - 1) && !IsHighscore)
+						text.setString("SOOOO CLOSE! :(\nYou scored " + std::to_string(score) + "\n\nYour high score is " + std::to_string(highscore) + "\n\nPress Space to retry\nPress Esc to return to main menu");
+
+					if (score == 0 && highscore == 0) {
+						text.setString("GAME OVER :(\nYou really suck at this!\n\nNo wonder you have no high score...\n\nPress Space to retry\nPress Esc to return to main menu");
+					}
+
+
+				}
+
+				window.clear();
+				window.draw(text);
+				window.pollEvent(event);
+
+				if (essentialeventtasks(window, event, false) == 1) {
+					window.clear();
+					return;
+				}
+
+				if (event.type == sf::Event::KeyPressed) {
+					if (event.key.code == sf::Keyboard::Space)
+						goto start;
+
+				}
+				window.display();
+
+			}
+		}
+
+
+
+
+		if (ballposition.x >= 800) {
+
+
+			bool IsHighscore = false;
+
+			if (score > highscore) {
+				IsHighscore = true;
+				highscore = score;
+				writehighscore(highscore);
+			}
+
+
+			while (window.isOpen()) {
+
+				fullscreentasks(window, event);
+				slope.x = 0, slope.y = 0;
+				sf::Text text;
+				text.setFont(font);
+				text.setCharacterSize(50);
+				text.setPosition(60, 100);
+				text.setPosition(60, 100);
+				if (IsHighscore)
+					text.setString("NEW HIGH SCORE! :)\nYou scored " + std::to_string(score) + "\n\nYour new high score is " + std::to_string(score) + "\n\nPress Space to retry\nPress Esc to return to main menu");
+
+				if (!IsHighscore) {
+					if (score >= 1 && score <= highscore)
+						text.setString("GAME OVER :(\nYou scored " + std::to_string(score) + "\n\nYour high score is " + std::to_string(highscore) + "\n\nPress Space to retry\nPress Esc to return to main menu");
+
+					if (score == 0 && highscore > 0)
+						text.setString("GAME OVER :(\nYou really suck at this!\n\nYour high score is " + std::to_string(highscore) + "\n\nPress Space to retry\nPress Esc to return to main menu");
+
+					if ((score == highscore || score == highscore - 1) && !IsHighscore)
+						text.setString("SOOOO CLOSE! :(\nYou scored " + std::to_string(score) + "\n\nYour high score is " + std::to_string(highscore) + "\n\nPress Space to retry\nPress Esc to return to main menu");
+
+					if (score == 0 && highscore == 0) {
+						text.setString("GAME OVER :(\nYou really suck at this!\n\nNo wonder you have no high score...\n\nPress Space to retry\nPress Esc to return to main menu");
+					}
+
+
+				}
+				window.clear();
+				window.draw(text);
+				window.pollEvent(event);
+
+				if (fullscreen)
+					fullscreentasks(window, isPaused, event);
+
+				if (essentialeventtasks(window, event, false) == 1) {
+					window.clear();
+					return;
+				}
+
+				if (event.type == sf::Event::KeyPressed) {
+					if (event.key.code == sf::Keyboard::Space)
+						goto start;
+
+
+				}
+				window.display();
+
+			}
+		}
+
+
+		if ((ballposition.y <= leftpaddleposition.y + 40 && ballposition.y >= leftpaddleposition.y - 40) && (ballposition.x <= leftpaddleposition.x + 5 && ballposition.x >= leftpaddleposition.x - 5)) {
+
+
+			slope.x = -slope.x;
+			slope.y = static_cast<int>(ballposition.y - leftpaddleposition.y) / 5;
+
+			if (slope.y == 0)
+				slope.y++;
+
+		}
+
+		if ((ballposition.y <= rightpaddleposition.y + 40 && ballposition.y >= rightpaddleposition.y - 40) && (ballposition.x <= rightpaddleposition.x + 5 && ballposition.x >= rightpaddleposition.x - 5)) {
+
+			slope.x = -slope.x;
+			slope.y = static_cast<int>(ballposition.y - rightpaddleposition.y) / 5;
+			if (slope.y == 0)
+				slope.y++;
+		}
+
+
+
+		if (ballposition.y >= 600)
+			slope.y = -slope.y;
+
+
+		if (ballposition.y <= 0)
+			slope.y = -slope.y;
+
+
+		if (!window.hasFocus())
+			isPaused = true;
+
+
+		if (event.type == sf::Event::KeyPressed) {
+			if (event.key.code == sf::Keyboard::Space)
+				isPaused = true;
+
+		}
+
+
+
+
+		while (isPaused) {
+
+
+
+
+			while (!sf::Keyboard::isKeyPressed(sf::Keyboard::Space) && firstrun) {
+				window.pollEvent(event);
+
+				fullscreentasks(window, isPaused, event);
+				essentialeventtasks(window, event, false);
+				sf::Text lefttutorial;
+				lefttutorial.setFont(font);
+				lefttutorial.setPosition(15, 300);
+				lefttutorial.setCharacterSize(23);
+				lefttutorial.setColor(sf::Color::Blue);
+				lefttutorial.setString("Use \"W\" key to move up\nUse\"S\" key to move down");
+
+				sf::Text righttutorial;
+				righttutorial.setFont(font);
+				righttutorial.setPosition(600, 300);
+				righttutorial.setCharacterSize(23);
+				righttutorial.setColor(sf::Color::Red);
+				righttutorial.setString("Use Up and Down\narrow keys to move");
+
+				sf::Text middletutorial;
+				middletutorial.setFont(font);
+				middletutorial.setPosition(20, 50);
+				middletutorial.setCharacterSize(34);
+				middletutorial.setColor(sf::Color::Black);
+				middletutorial.setString("Press SPACE at any time to pause the game\n\nYou can return to the main menu from the pause menu");
+
+				sf::Text starttext;
+				starttext.setFont(font);
+				starttext.setPosition(270, 300);
+				starttext.setCharacterSize(32);
+				starttext.setColor(sf::Color::Black);
+				starttext.setStyle(sf::Text::Underlined | sf::Text::Bold);
+				starttext.setString("Press SPACE to start");
+
+				window.draw(starttext);
+				window.draw(middletutorial);
+				window.draw(lefttutorial);
+				window.draw(righttutorial);
+				window.draw(rightpaddle);
+				window.draw(leftpaddle);
+				window.display();
+				window.clear(sf::Color::Green);
+			}
+
+
+			if (!firstrun) {
+				sf::Text pause;
+				pause.setPosition(100, 200);
+				pause.setFont(font);
+				pause.setColor(sf::Color::Black);
+				pause.setCharacterSize(50);
+				pause.setString("\n\nPress SPACE to resume game\nPress Esc to return to main menu");
+				sf::Text bigpause;
+				bigpause.setPosition(100, 200);
+				bigpause.setFont(font);
+				bigpause.setColor(sf::Color::Black);
+				bigpause.setStyle(sf::Text::Bold | sf::Text::Underlined);
+				bigpause.setCharacterSize(55);
+				bigpause.setString("PAUSED");
+				window.draw(leftpaddle);
+				window.draw(rightpaddle);
+				window.draw(bigpause);
+				window.draw(pause);
+				window.draw(ball);
+				window.display();
+				window.clear(sf::Color::Green);
+			}
+			window.pollEvent(event);
+
+
+			fullscreentasks(window, isPaused, event);
+
+			essentialeventtasks(window, event, false);
+
+			if (essentialeventtasks(window, event, false) == 1) {
+				window.clear();
+				return;
+			}
+
+
+			if (event.type == sf::Event::KeyPressed) {
+				if (event.key.code == sf::Keyboard::Space)
+					isPaused = false;
+
+			}
+
+		}
+
+		firstrun = false;
+		window.draw(ball);
+
+		window.display();
+		window.clear(sf::Color::Green);
+	}
+	exit(0);
+}
+
 
 void twoplayer(sf::RenderWindow& window) {
 	window.setTitle("Two-player Pong");
@@ -1055,35 +1536,21 @@ void mainmenu(sf::RenderWindow& window, sf::Font& font) {
 		if (event.type == sf::Event::KeyPressed) {
 			if (event.key.code == sf::Keyboard::Num3) {
 				
-			/*	do
-				{
-					int action = MessageBox(NULL, (LPCWSTR)L"Still in development. Proceed?", (LPCWSTR)L"Warning", MB_YESNO | MB_ICONWARNING);
-
-					if (action == IDNO)
-						break;
-						*/
+	
 					playervcom(window);
 
 					window.setTitle("Pong");
-
-			//	} while (false);
-
 
 			}
 		}
 
 		if (event.type == sf::Event::KeyPressed) {
 			if (event.key.code == sf::Keyboard::Num4) {
-				sf::Text comingsoon;
-				comingsoon.setFont(font);
-				comingsoon.setCharacterSize(50);
-				comingsoon.setPosition(100, 200);
-				comingsoon.setString("Coming Soon ;)");
-				window.clear();
-				window.draw(comingsoon);
-				window.display();
-				Sleep(5000);
-				exit(0);
+				coop(window);
+
+				window.setTitle("Pong");
+
+				
 
 			}
 		}
@@ -1142,55 +1609,6 @@ void mainmenu(sf::RenderWindow& window, sf::Font& font) {
 
 
 
-int readhighscore() {
-	int num = 0;
-	char fake1;
-	char fake2;
-	std::ifstream highscore;
-	highscore.open("pong.dat");
-	
-	if (highscore.fail()) {
-		MessageBox(NULL, (LPCWSTR)L"Settings and highscores will be stored in \"pong.dat\". (If you are running this game in its zip file, please make sure you extract it or your high score will not be saved)", (LPCWSTR)L"No saved data found", MB_ICONINFORMATION);
-		return 0;
-	}
-	
-	highscore.seekg(59);
-
-	highscore >> fake1 >> num >> fake2;
-
-	highscore.seekg(61);
-
-	
-
-	//if (fake2 != "pq3j4jpq483jpaojifpq84" || fake1 != '9') {
-	if (fake1 != '9') {
-		int action = MessageBox(NULL, (LPCWSTR)L"The file \"pong.dat\" is either invalid or has been incorrectly modified. It will now be deleted (this includes settings and high scores). If you think you can fix this problem, you can cancel the operation. However, if you proceed, everything will be deleted.", (LPCWSTR)L"Error reading file", MB_ICONERROR | MB_OKCANCEL);
-
-		if (action == IDCANCEL)
-			exit(-1);
-
-		highscore.close();
-		do {
-			if (remove("pong.dat") != 0) {
-
-
-				action = MessageBox(NULL, (LPCWSTR)L"Could not delete file", (LPCWSTR)L"Error", MB_ICONERROR | MB_RETRYCANCEL);
-
-				if (action == IDCANCEL) {
-					exit(-1);
-				}
-			}
-		 } while (action == IDRETRY);
-
-		
-		
-		MessageBox(NULL, (LPCWSTR)L"File deleted! (try not to get into any more trouble)", (LPCWSTR)L"File Deleted", MB_ICONINFORMATION | MB_OK);
-		return 0;
-	}
-
-	//highscore >> fake1 >> num;
-	return num;
-}
 
 
 
@@ -1212,23 +1630,6 @@ int readhighscore() {
 
 
 
-int writehighscore(int num) {
-	//std::string fake1 = "28934h02h4f02f2790f273yfr97y3290fm02n389yfrnm029ryfmn023rfn02893yrfnm02839rfynpoifjqpiojfqiojewfqijowefqpweifojqpwioefj ";
-	std::ofstream highscore;
-	//char fake2[10] = { 'v','8','4','j','s','0','f','0','f','h','9' };
-	highscore.open("pong.dat");
-
-	if (highscore.fail())
-		return -1;
-
-
-
-		//highscore << fake1 << fake2[0] << fake2[1] << fake2[2] << fake2[3] << fake2[4] << fake2[5] << fake2[6] << fake2[7] << fake2[8] << fake2[9] << fake2[10] <<  num;
-	
-	highscore << "p2rf8j2p893jfp2893fjp82jf2p8j82jpjpe8jdapoijsdfp98jqf89pj349" << num << "pq3j4jpq483jpaojifpq84" << endl;
-		
-	return num;
-}
 
 
 
@@ -1321,7 +1722,7 @@ int main() {
 		mainmenu(window, font);
 		bool firstrun = true;
 		bool isPaused = true;
-		int highscore = readhighscore();
+		int highscore = readhighscore("single");
 	start:
 		int consecutive = 0;
 		sf::Vector2f ballposition(400, 300);

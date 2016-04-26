@@ -27,8 +27,11 @@ int main() {
 	square.setPosition(sf::Mouse::getPosition(window).x - 16, sf::Mouse::getPosition(window).y - 16); //Set the position of the square equal to the coordinates of the mouse. This allows the square to follow the mouse.
 
 
-	if (event.type == sf::Event::MouseButtonPressed)	//When the mouse button is pressed, it should set makeBigger to true
+	if (event.type == sf::Event::MouseButtonPressed) {	//When the mouse button is pressed, it should set makeBigger to true
 		makeBigger = true;
+		square.setPosition(sf::Mouse::getPosition(window).x - 20, sf::Mouse::getPosition(window).y - 20);
+
+	}
 
 	else if (event.type == sf::Event::MouseButtonReleased)	//When the mouse button is released, it should set makeBigger to false
 		makeBigger = false;
@@ -43,7 +46,6 @@ int main() {
 	//Display objects to the window
 	window.display();
 	window.clear(sf::Color::Blue);
-	
 
 }
 }
